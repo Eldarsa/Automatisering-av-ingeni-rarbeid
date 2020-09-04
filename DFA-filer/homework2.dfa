@@ -1,1 +1,65 @@
-Dette er en DFA fil
+#! NX/KF 4.0
+DefClass:Exhaust_Pipe (ug_base_part);
+
+    #Center coordinates
+    (number parameter) x: 0;
+    (number parameter) x: 0;
+    (number parameter) x: 0;
+
+    #Amount of holes along and around the pipe
+    (number parameter) holes_along: 4;
+    (number parameter) holes_around: 5; 
+
+    #Pipe parameters
+    (number parameter) cyl_outer_dia: 50;
+    (number parameter) cyl_length: 100;
+    (number parameter) cyl_thickness: 5;
+    (number parameter) cyl_inner_dia: getInnerDiameter:(cyl_outer_dia:, cyl_thickness:);
+
+    #Window parameters
+    (number parameter) window_dia: 10;
+
+    #Lists for center-points and vectors
+    (list) window_center_list: ;
+    (list)
+    
+
+    #Methods
+
+    (Method Number) getInnerDiameter:(Number $outer_dia, Number $thickness) 
+    @{
+         $outer_dia - $thickness*2;
+    };
+
+    (Method Number) getHorisontalDistribution:(Number $cylinder_length, Number $number_of_holes_along) 
+    @{
+         $cylinder_length / ($number_of_holes_along + 2); #Add 2 for ends
+    };
+
+    (Method Number) getCircularDistribution:(Number $outer_diameter, Number $number_of_holes_along)
+    @{
+         $outer_diameter * 
+    };
+
+
+
+(child) cylinder_main:
+{
+    class, ug_cylinder;
+    diameter, cyl_outer_dia:;
+    height, cyl_length:;
+    Origin, Point(0,0,0);
+    Direction, Vector(1,0,0);
+};
+
+(child) cylinder_hole:
+{
+    class, ug_cylinder;
+    diameter, cyl_inner_dia:;
+    height, cyl_length:;
+    Origin, Point(0,0,0);
+    Direction, Vector(1,0,0);
+    Operation, Subtract;
+    Target, {cylinder_main:};
+};
+
