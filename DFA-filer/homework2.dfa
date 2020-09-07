@@ -1,47 +1,80 @@
 #! NX/KF 4.0
-DefClass:Exhaust_Pipe (ug_base_part);
+DefClass:Exhaust_Pipe (%ug_create_instance ug_base_part);
 
     #Center coordinates
     (number parameter) x: 0;
-    (number parameter) x: 0;
-    (number parameter) x: 0;
+    (number parameter) y: 0;
+    (number parameter) z: 0;
 
     #Amount of holes along and around the pipe
-    (number parameter) holes_along: 4;
-    (number parameter) holes_around: 5; 
+    (number parameter) holes_along: 15;
+    (number parameter) holes_around: 20; 
 
     #Pipe parameters
     (number parameter) cyl_outer_dia: 50;
     (number parameter) cyl_length: 100;
-    (number parameter) cyl_thickness: 5;
+    (number parameter) cyl_thickness: 0.5;
     (number parameter) cyl_inner_dia: getInnerDiameter:(cyl_outer_dia:, cyl_thickness:);
 
     #Window parameters
-    (number parameter) window_dia: 10;
+    (number parameter) window_dia: 2.5;
+    (number parameter) horizontal_distribution_space: getHorisontalDistributionSpace:(cyl_length:, holes_along:);
+    (number parameter) angular_distribution_space: getAngularDistributionSpace:(holes_around:); 
 
     #Lists for center-points and vectors
-    (list) window_center_list: ;
-    (list)
+    (list) center_list: getCenterCoordinates:(x:, y:, z:, holes_along:, holes_around:, horizontal_distribution_space:, angular_distribution_space:,
+            cyl_inner_dia:, cyl_thickness:);
+    (list) directional_vector_list: getDirectionalVectors:(holes_around:, angular_distribution_space:);  
     
 
-    #Methods
+#+
+************************************METHODS*****************************************
+#-
 
     (Method Number) getInnerDiameter:(Number $outer_dia, Number $thickness) 
     @{
-         $outer_dia - $thickness*2;
+         $outer_dia - $thickness * 2;
     };
 
-    (Method Number) getHorisontalDistribution:(Number $cylinder_length, Number $number_of_holes_along) 
+    (Method Number) getHorisontalDistributionSpace:(Number $cylinder_length, Number $number_of_holes_along) 
     @{
-         $cylinder_length / ($number_of_holes_along + 2); #Add 2 for ends
+         $cylinder_length / ($number_of_holes_along + 1); #Add 1 for ends
     };
 
-    (Method Number) getCircularDistribution:(Number $outer_diameter, Number $number_of_holes_along)
+    (Method Number) getAngularDistributionSpace:(Number $number_of_holes_around)
     @{
-         $outer_diameter * 
+         360 / ($number_of_holes_around); 
+    };
+
+    (Method List) getCenterCoordinates:(Number $x, Number $y, Number $z, Number $holes_along, Number $holes_around,
+        Number $horizontal_distribution_space, Number $angular_distribution_space, Number $cyl_inner_dia, Number $thickness)
+    @{
+        loop
+        {
+            for $i from 1 to ($holes_along); 
+            collect loop{
+                for $j from 0 to ($holes_around-1);
+                do printValue($angular_distribution_space*$j);
+                append{Point($x + $i*$horizontal_distribution_space, 
+                ($y + $cyl_inner_dia / 2 - 2) * cos($angular_distribution_space*$j),
+                ($z + $cyl_inner_dia / 2 - 2) * sin($angular_distribution_space*$j))}; #trekker fra 2 for å få intersection!
+            };
+        };
     };
 
 
+    (Method List) getDirectionalVectors:(Number $number_of_holes_around, Number $angular_distribution_space)
+    @{
+        loop
+        {
+            for $i from 0 to $number_of_holes_around;
+            append{Vector(0,0 + 1*cos($angular_distribution_space * $i), 0 + 1*sin($angular_distribution_space * $i))};
+        };
+    };
+
+#+
+**********************************CHILDREN********************************************
+#-
 
 (child) cylinder_main:
 {
@@ -63,3 +96,26 @@ DefClass:Exhaust_Pipe (ug_base_part);
     Target, {cylinder_main:};
 };
 
+
+(list) List1: loop
+{
+    for $center in center_list:;
+    collect loop {
+        for $periferal_centers in $center;
+        for $vector in directional_vector_list:;
+        do printValue($vector);
+        do printValue($periferal_centers);
+        append {ug_createInstance(
+  	    {
+   	 	    class, ug_cylinder;
+    		Diameter, window_dia:;
+    		Height, cyl_thickness: + 2;
+    		Origin, $periferal_centers; 
+    		Direction, $vector;
+   		    Operation, Subtract;
+   		    Target, {cylinder_main:};
+        })};
+    };
+};
+#(list) children: children() + List1:;
+(list) DemandValue: {List1:};
