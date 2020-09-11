@@ -1,0 +1,64 @@
+#! NX/KF 4.0
+DefClass: Colored_Block_XML_ (ug_base_part);
+    (number parameter) my_height: 50;
+    (number parameter) my_width: 50;
+    (number parameter) my_length: 50; 
+    # Colored volumes thresholds - yellow in between red and green
+    (number parameter) red: 1000000; # above
+    (number parameter) green: 1000; # below
+	(string parameter) TheColor: getColorByXML:();
+
+(child) block1: 
+    {
+        class, ug_block;
+        length, my_length:;
+        width, my_width:;
+        height, my_height:;
+        origin, getPosByXML:(); #point(0, 0, 0);
+    };
+
+# Body colored depending on the volume of the block
+(Child) body_colored: 
+{ 
+  Class, ug_body; 
+  Feature, {block1:};  
+  Layer, 1; 
+  color,  if (TheColor: = "RED") then ug_askClosestColor(RED) 
+	   else if(TheColor: = "BLUE") then ug_askClosestColor(BLUE)
+	          else ug_askClosestColor(YELLOW); 
+};
+
+(child) xml_parser:
+{
+	class, ug_xml_parser;
+	xml_filename, "C:\Users\Eldar\Desktop\xmls\shapes.xml";
+};
+
+(Method Number) getVolume:(Number $length, Number $width, Number $height)
+@{
+  $length * $width * $height;
+};
+
+(list parameter) X_XML: xml_parser:get_xml_data:("x_");
+(list parameter) Y_XML: xml_parser:get_xml_data:("y_");
+(list parameter) Z_XML: xml_parser:get_xml_data:("z_");
+
+(Method Point) getPosByXML:()
+@{
+   $ret << Point(ug_askValueOfExpressionStr(nth(1, nth(1, X_XML:))), 
+			ug_askValueOfExpressionStr(nth(1, nth(1, Y_XML:))), 
+			ug_askValueOfExpressionStr(nth(1, nth(1, Z_XML:)))
+		);
+   $ret;
+};
+
+(list parameter) Color_XML: xml_parser:get_xml_data:("col_");
+
+(Method string) getColorByXML:()
+@{
+   $ret << nth(1, nth(1, Color_XML:));
+   $ret;
+};
+
+(point parameter) Pos_XML: getPosByXML:();
+

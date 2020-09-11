@@ -1,0 +1,76 @@
+#! NX/KF 4.0
+DefClass: Table_lamp (%ug_create_instance ug_base_part);
+
+    #Main origin coordinates
+    (Number Parameter) x: 0;
+    (Number Parameter) y: 0;
+    (Number Parameter) z: 0;
+
+    #Origin points and vectors
+    #Note that the vectors and points for the leg and hood depend on the vector and points for the base. 
+    (Point) base_Origin: (x:, y:, z:);
+    (Point) leg_Origin: getLegOrigin:(baseOrigin);
+    (Point) hood_Origin: getLegEndpoint:(legEndpoint);
+    
+    (Vector) base_Vector: Vector(0,0,1); #Note that this is always the same!
+    (Vector) leg_Vector: getLegVector:(baseVector);
+    (Vector) hood_Vector: getHoodVector:(baseVector);
+
+
+    #Hood parameters
+    (Number parameter) hood_diameter: 30;
+    (Number parameter) hood_height: 60;
+
+    #Chain parameters
+    (Number parameter) number_of_chains: 3;
+    (Number parameter) chain_diameter: 2;
+    (Number parameter) beads_per_chain: 5;
+    (Number parameter) bead_diameter: 6;
+    (Number parameter) space_between_beads: 4; 
+    (Number parameter) chain_length: getChainLength:(beads_per_chain, bead_diameter, space_between_beads)
+
+    #Chain origin points
+    (List) chain_origin_list: getChainOrigins:(hood_diameter, hood_height, hood_Origin, hood_Vector); 
+
+    #COLOR PALLETTE
+    #PARAMETER lampscreen: yellow;
+    #Parameter lampstand: orange;
+    #Parameter lampbottom: orange; 
+
+    #SUPPORT VECTORS
+
+
+#+
+***************************************METHODS**********************************************
+#-
+
+    (Method Number) getAngularDistributionSpace:(Number $number_of_chains)
+    @{
+         360 / ($number_of_chains); 
+    };
+
+    (Method Number) getChainLength:(Number $beads_per_beads, Number $diameter, Number $space)
+    @{
+         $beads_per_chain * $diameter + $beads_per_chain * $space; 
+    };
+
+    (Method List) getChainOrigins:(Number $hood_diameter, Number $hood_height, Number $number_of_chains, 
+        Point $hood_origin, Vector $hood_vector, Number $angular_distribution)
+    @{
+        #This loop simply adds vector to all the points we need. You CAN use Point + Vector = New Point!
+         loop 
+         {
+             for $i from 0 to $number_of_chains;
+             do printValue($angular_distribution*$i);
+             append { 
+                Point($hood_origin + $hood_vector * hood_height 
+                + Vector($hood_diameter * cos($angular_distribution * $i),
+                $hood_diamete * sin($angular_distribution * $i),
+                0))
+             };
+         };
+    };
+
+#+
+***************************************CHILDREN**********************************************
+#-
