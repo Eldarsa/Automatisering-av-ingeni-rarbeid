@@ -1,0 +1,15 @@
+DefClass: My_someting (ug_base_part);
+    (Number Parameter) Pipe_length: 60;
+    (Number Parameter) Pipe_diameter: 30;
+    (Number Parameter) Pipe_wall_width: 5;
+
+    (Number Parameter) Hole_diameter: 5;
+
+(child) Base_Pipe:
+    {
+        class, ug_cylinder;
+        diameter, Pipe_diameter:;
+        height, Pipe_length:;
+        length, Pipe_length:;
+        Origin, Point(0,0,0);
+    };

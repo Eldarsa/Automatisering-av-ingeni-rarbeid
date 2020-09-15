@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="yes" ?>
+<!DOCTYPE coords [
+<!ELEMENT coords (point*)>
+<!ELEMENT point (x_,y_,z_)>
+<!ELEMENT color (*****QUE?*****)>
+<!ELEMENT x_ (#PCDATA)>
+<!ELEMENT y_ (#PCDATA)>
+<!ELEMENT z_ (#PCDATA)>
+]>
+<coords>
+	<point>
+		<x_> 20 </x_> 
+		<y_> 40 </y_> 
+		<z_> -10 </z_> 
+	</point>
+	<point>
+		<x_> 10 </x_> 
+		<y_> 10 </y_> 
+		<z_> 10 </z_> 
+	</point>
+</coords>

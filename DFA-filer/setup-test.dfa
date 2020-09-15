@@ -1,0 +1,43 @@
+#! NX/KF 4.0
+DefClass:Bush (ug_base_part);
+# Set of default parameters for the part
+    (number parameter) lenght: 100;
+    (number parameter) max_ext_dia: 80;
+    (number parameter) max_ext_length: 40;
+    (number parameter) min_ext_dia: 70;
+    (number parameter) min_ext_length: lenght:-max_ext_length:;
+    (number parameter) hole_dia: 60;
+
+
+# Basic building elements to form a structure
+(child) max_ext_disk: 
+    {
+        class, ug_cylinder;
+        diameter, max_ext_dia:;
+	    height, max_ext_length:;
+	    Origin, Point(0,0,0);
+	    Direction, Vector(0,0,1);
+    };
+
+(child) min_ext_disk: 
+    {
+        class, ug_cylinder;
+        diameter, min_ext_dia:;
+	height, min_ext_length:;
+	Origin, Point(0,0,max_ext_length:);
+	Direction, Vector(0,0,1);
+  	Operation, Unite;
+  	Target, {max_ext_disk:};
+    };
+
+(child) hole: 
+    {
+        class, ug_cylinder;
+        diameter, hole_dia:;
+	height, lenght:;
+	Origin, Point(0,0,0);
+	Direction, Vector(0,0,1);
+  	Operation, Subtract;
+  	Target, {min_ext_disk:};
+    };
+

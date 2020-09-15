@@ -1,0 +1,39 @@
+#! NX/KF 4.0
+DefClass:MyButton__ (%ug_create_instance ug_base_part);
+    (number parameter) disk_dia: 10;
+    (number parameter) disk_height: 1.5;
+    (integer parameter) holes_amt: 4;
+    (number parameter) hole_dia: 1;
+
+# Basic building elements to form a structure - Button disk
+(child) button_disk: 
+    {
+        class, ug_cylinder;
+        diameter, disk_dia:;
+	height, disk_height:;
+	Origin, Point(0,0,0);
+	Direction, Vector(0,0,1);
+    };
+
+#Loop to generate the list of buttons holes to cut off from the disk.
+(list) list1: loop
+{
+  for $x in {-2.5, 2.5, 0}; # Coodinates for X hardcoded
+  collect loop {
+  	for $y from -2.5 to 2.5 by 2.5; # Coordinates for Y hardcoded
+  	for $pt is Point($x,$y,0);
+  	do printValue($pt);
+  	append {ug_createInstance(
+  	{
+   	 	class, ug_cylinder;
+    		diameter, 1;
+    		height, 1.5;
+    		Origin, $pt; 
+    		Direction, Vector(0,0,1);
+   		Operation, Subtract;
+   		Target, {button_disk:}; # Generating a cylinder and subtracting from the button disk
+  	})};
+  };
+};
+#(list) children: children() + list1:;
+(list) DemandValue: {List1:};

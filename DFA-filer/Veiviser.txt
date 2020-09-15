@@ -1,0 +1,3 @@
+
+Retning til alle delene i ug_base_part: 
+C:\Program Files\Siemens\NX1899\UGII\dfa\kf\hostlib

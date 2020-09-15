@@ -1,0 +1,73 @@
+#! NX/KF 4.0
+DefClass: My_sphere (ug_base_part);
+    (Number Parameter) cyl_diameter: 10;
+    (Number Parameter) cyl_length: 50;
+    (Number Parameter) cyl_height: 50;
+    (Number Parameter) cone_width: 20;
+    (Number Parameter) cone_height: 10;
+
+    (Canonical Number Parameter Modifiable)    Big_diameter:  50;
+    (Canonical Point  Parameter Modifiable)    Big_Center:    Point(0,0,0);
+
+    (Canonical Number Parameter Modifiable)    Ear_diameter:  25;
+
+    (List)                                     Operation_init: 
+    { 
+        Unite, 
+        Subtract,
+        Intersect 
+    };
+
+(child) sphere: 
+    {
+        class, ug_sphere;
+        diameter, Big_diameter:;
+	    Origin, Point(0,0,0);
+	    Direction, Vector(0,0,1);
+    };
+
+(child) cylinder:
+    {  
+        class, ug_cylinder;
+        diameter, cyl_diameter:;
+        length, cyl_length:;
+        height, cyl_height:;
+        Origin, point(12,0,15);
+        Direction, Vector(1,0,0);
+        Operation, Subtract;
+        Target, {sphere:};
+    };  
+
+(child) left_ear: 
+    {
+        class, ug_sphere;
+        diameter, Ear_diameter:;
+	    Center, Point(0,15,-30);
+	    Direction, Vector(0,0,1);
+        Operation, Unite;
+        Target, {sphere:};
+    };
+
+    
+(child) right_ear: 
+    {
+        class, ug_sphere;
+        diameter, Ear_diameter:;
+	    Center, Point(0,-15,-30);
+	    Direction, Vector(0,0,1);
+        Operation, Unite;
+        Target, {sphere:};
+    };
+
+(child) nose:
+    {
+        class, ug_cone;
+        Base_Diameter, 20;
+        Top_Diameter,  0;
+        Height,        30;
+        Origin,        Point(20,0,0);
+        Direction,     Vector(1,0,0);
+        Operation, Unite;
+        Target, {sphere:};
+
+    };

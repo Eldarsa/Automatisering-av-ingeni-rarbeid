@@ -1,0 +1,82 @@
+#! NX/KF 4.0 - Curved rail demo v0.5
+DefClass:Curved_Rail (ug_base_part);
+# Set of default parameters for the part
+(number parameter) rail_width: 167;
+(number parameter) rail_height: 291;
+(number parameter) rail_length: 4000;
+
+(number parameter) wire_diameter: 291;
+	
+(number parameter) rail_base_height: 11.167;
+(number parameter) rail_wall_width: 6.604;
+
+(number parameter) x: 100-rail_width:/2;
+(number parameter) y: 100;
+(number parameter) z: 0;
+
+(number parameter) rotX: 1;
+(number parameter) rotY: 1;
+(number parameter) rotZ: 1;
+
+# Curve to follow
+(number parameter) curve_radius: 2000;
+
+
+(child) circle_profile: {
+    class, ug_arc;
+    diameter, rail_diameter:;
+    start_angle, 0;
+    end_angle, 360;
+    center, point(x:,y:,z:);
+    X_axis, vector(1,0,0);
+    Y_axis, vector(0,0,1);
+};
+
+#Elements of the path start to form
+
+(child) curve_1: { 
+  class, ug_arc;
+  radius, curve_radius:;
+  start_angle, 0;
+  end_angle, 180;
+  center, point(x:,y:,z:);
+};
+
+(child) curve_2: { 
+  class, ug_arc;
+  radius, curve_radius:;
+  start_angle, 180;
+  end_angle, 360;
+  center, point((-2*curve_radius:)+x:,-4000+y:,z:);
+};
+
+(Child) line_13: {
+ Class, ug_line; 
+ Start_Point, Point(-curve_radius:+x:,y:,z:); 
+ End_Point, Point(-curve_radius:+x:,-4000+y:,z:); 
+}; 
+
+#The curved rail
+
+(child) rail_path: {
+  Class, ug_curve_join;
+  profile, {curve_1:,line_13:,curve_2:};
+};
+(child) rail_1: {
+  class, ug_swept;
+  guide, {{forward, rail_path:}};
+  section, {{forward, circle_profile:}};
+  scaling, {scale_constant, 1};
+  alignment_init, parameter;
+  orientation, {orientation_fixed};
+  tolerances, {0, 0, 0};
+};
+
+# Colored rail - emulating the "rail"
+(Child) rail_colored:
+{
+  Class, ug_body;
+  Feature, {rail_1:};
+  Layer, 1;
+  color, ug_askClosestColor(RED);
+};

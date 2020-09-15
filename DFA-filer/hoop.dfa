@@ -1,0 +1,77 @@
+#! NX/KF 4.0 - Hoop demo
+DefClass: Hoop (ug_base_part);
+# Set of default parameters for the part
+(number parameter) hoop_radius: 100;
+(number parameter) hoop_profile_radius: 10;
+
+
+(number parameter) x: 0;
+(number parameter) y: 0;
+(number parameter) z: 0;
+
+(number parameter) number_of_rings: 10;
+
+
+#+
+(child) path_curve_1: { 
+  class, ug_arc;
+  radius, hoop_radius:;
+  start_angle, 0;
+  end_angle, 360;
+  center, point(x:,y:,z:);
+};
+#-
+
+(list) list1: loop
+{
+    for $i from 0 to {number_of_rings:} by 2;
+    collect loop {
+        for $j from 0 to 2;
+        do printValue($j);
+        append {ug_createInstance(
+            class, ug_arc;
+            radius, hoop_profile_radius:;
+            start_angle, 0;
+            end_angle, 360;
+            center, point(x:+hoop_radius:*$i,y:,z:);
+            Y_Axis, Vector(0,1-$j,0+$j);
+            X_Axis, Vector(0,0+$j,0-$j);
+        )};
+    };
+
+};
+(list) DemandValue: {List1:};
+
+
+#Building up the hoop
+
+(child) the_profile: 
+{
+  Class, ug_curve_join;
+  profile, {List1:};
+};
+(child) the_path: 
+{
+  Class, ug_curve_join;
+  profile, {path_curve_1:};
+};
+(child) the_hoop: 
+{
+  class, ug_swept;
+  guide, {{forward, the_path:}};
+  section, {{forward, the_profile:}};
+  scaling, {scale_constant, 1};
+  alignment_init, parameter;
+  orientation, {orientation_fixed};
+  tolerances, {0, 0, 0};
+};
+
+# Colored hoop
+(Child) hoop_colored:
+{
+  Class, ug_body;
+  Feature, {the_hoop:};
+  Layer, 1;
+  color, ug_askClosestColor(GREEN);
+};
+

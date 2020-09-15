@@ -1,0 +1,11 @@
+(child) Feat2:
+{
+    class, if Option:=1 then ug_block
+    else if Option:=2 then ug_cylinder
+    else NullDesign;
+
+    Length, TotalLength:;
+    Height, WidgetHeight:;
+    Diameter, CylDiameter:;
+    Width, 10;
+}
