@@ -1,0 +1,85 @@
+#! NX/KF 4.0
+DefClass: Clustered_objects_ (ug_base_part);
+
+#+
+**********************EXERCISE EXPLANATION*************************
+I couldn't get the getObjectProperty to work. The intention was to fetch properties of different
+objects using a single method, but the return value is purely null. I couldn't find the reason why,
+but i suspect the reason being how the elements in the XML file are declared.
+#-
+
+
+    #Block parameters
+    (number parameter) block_height: getObjectProperty:("b_height_");
+    (number parameter) block_width: getObjectProperty:("b_width_");
+    (number parameter) block_length: getObjectProperty:("b_length_"); 
+    
+    #Cylinder parameters
+    (number parameter) cylinder_diameter: getObjectProperty:("c_heigth_");
+    (number parameter) cylinder_height: getObjectProperty:("c_diameter_");
+ 
+    #Sphere parameters
+    (number parameter) sphere_radius: getObjectProperty:("s_radius_");
+
+    #All the origin points 
+    (list parameter) X_XML: xml_parser:get_xml_data:("x_");
+    (list parameter) Y_XML: xml_parser:get_xml_data:("y_");
+    (list parameter) Z_XML: xml_parser:get_xml_data:("z_");
+
+    (point parameter) block_origin: getPosByXML:(1); 
+    (point parameter) cylinder_origin: getPosByXML:(2);
+    (point parameter) sphere_origin: getPosByXML:(3);
+
+#+
+********************************XML Methods***********************************************
+#-
+
+(Method Point) getPosByXML:($position_number)
+@{
+   $ret << Point(ug_askValueOfExpressionStr(nth($position_number, X_XML:)), 
+			ug_askValueOfExpressionStr(nth($position_number, Y_XML:)), 
+			ug_askValueOfExpressionStr(nth($position_number, Z_XML:)));
+   $ret;
+};
+
+(Method number) getObjectProperty:($property_tag)
+@{
+    $ret << ug_askValueOfExpressionStr(xml_parser:get_xml_data:($property_tag));
+    $ret;
+};
+
+(child) xml_parser:
+{
+	class, ug_xml_parser;
+	xml_filename, "C:\Users\Eldar\Desktop\xmls\homework3.xml";
+};
+
+#+
+********************************Object children******************************************
+#-
+
+
+(child) block: 
+    {
+        class, ug_block;
+        length, block_length:;
+        width, block_width:;
+        height, block_height:;
+        origin, block_origin:;
+    };
+
+
+(child) cylinder:
+    {
+        class, ug_cylinder;
+        height, cylinder_height:;
+        diameter, cylinder_diameter:;
+        origin, cylinder_origin:;
+    };
+
+(child) sphere:
+    {
+        class, ug_sphere;
+        diameter, sphere_radius:;
+        center, sphere_origin:;
+    };
