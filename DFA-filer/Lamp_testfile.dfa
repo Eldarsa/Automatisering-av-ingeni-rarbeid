@@ -1,5 +1,5 @@
 #! NX/KF 4.0
-DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
+DefClass: A_Table_lamp_test (%ug_create_instance ug_base_part);
 
     #Main origin coordinates
     (Number Parameter) x: 0;
@@ -7,9 +7,9 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     (Number Parameter) z: 0;
 
     #Origin points and vectors
-    (Point parameter) hood_origin: Point(x:, y:, z:);
+    (Point) hood_origin: Point(x:, y:, z:);
 
-    (Vector parameter) hood_vector: Vector(0,0,-1);
+    (Vector) hood_vector: Vector(0,0,-1);
 
     #Hood parameters
     (Number parameter) hood_diameter: 50;
@@ -22,18 +22,19 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     (Number parameter) distance_from_center_to_cutoff: hood_diameter: / 2 - cutoff_height:; 
 
     #Chain parameters
-    (Number parameter) number_of_chains: 4;
-    (Number parameter) chain_diameter: 0.5;
+    (Number parameter) number_of_chains: 3;
+    (Number parameter) chain_diameter: 2;
     (Number parameter) beads_per_chain: 5;
-    (Number parameter) bead_diameter: 5;
-    (Number parameter) space_between_beads: 2; 
+    (Number parameter) bead_diameter: 6;
+    (Number parameter) space_between_beads: 4; 
     (Number parameter) chain_length: getChainLength:(beads_per_chain:, bead_diameter:, space_between_beads:);
     (Number parameter) angular_distribution: getAngularDistributionSpace:(number_of_chains:);
 
     #Important helper function!
-    (Number parameter) cutoff_radius: getCutoffDiameter:(hood_diameter:, distance_from_center_to_cutoff:);
+    (Number parameter) cutoff_diameter: getCutoffDiameter:(diameter:, distance_from_center_to_cutoff:);
+    (Number parameter) cutoff_radius: cutoff_diameter: /2;
 
-    (List) chain_origin_list: getChainOrigins:(distance_from_center_to_cutoff:, cutoff_radius:, number_of_chains:,
+    (List) chain_origin_list: getChainOrigins:(distance_from_center_to_cutoff:, cutoff_radius:, hood_vector:, number_of_chains:,
     hood_center:, hood_vector:, angular_distribution:); 
 
 #+
@@ -47,7 +48,8 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
 
     (Method Number) getCutoffDiameter:(Number $diameter, Number $distance)
     @{
-        sqrt(($diameter / 2)*($diameter / 2) - $distance*$distance);
+        #sqrt(($diameter / 2)*($diameter / 2) - $distance*$distance);
+        sqrt(5);
     };
 
     (Method Number) getAngularDistributionSpace:(Number $number_of_chains)
@@ -66,13 +68,12 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
         #This loop simply adds vector to all the points we need. You CAN use Point + Vector = New Point!
          loop 
          {
-             for $i from 0 to $number_of_chains-1;
+             for $i from 0 to $number_of_chains;
              do printValue($angular_distribution*$i);
              append { 
-                 $hood_center + $hood_vector * $distance_to_cutoff 
-                 + Vector(1 * cos($angular_distribution * $i),
-                 1 * sin($angular_distribution * $i),
-                 0) * $cutoff_radius;
+                Point($cutoff_radius * cos($angular_distribution * $i),
+                $cutoff_radius * sin($angular_distribution * $i),
+                $hood_center + $hood_vector * distance_to_cutoff)
              };
          };
     };
@@ -124,22 +125,18 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     for $origin in chain_origin_list:;
     collect loop{
         for $bead from 0 to beads_per_chain:;
-        do printValue($origin);
-        do printValue($bead);
-        append { ug_createInstance(
-        {
+        append{ug_create_instance(
             class, ug_cylinder;
             diameter, chain_diameter:;
             height, space_between_beads:;
             Origin, $origin + (Vector(0,0,-1) * (space_between_beads: + bead_diameter:)) * $bead;
             Direction, Vector(0,0,-1);
-        })};
-        append{ug_createInstance(
-        {
+        )};
+        append{ug_create_instance(
             class, ug_sphere;
             diameter, bead_diameter:;
             center, $origin + Vector(0,0,-1) * ( (space_between_beads: + bead_diameter: / 2) * ($bead + 1) + bead_diameter: / 2 * $bead);  
-        })};
+        )};
     };
 };
 (list) DemandValue: {chains:};

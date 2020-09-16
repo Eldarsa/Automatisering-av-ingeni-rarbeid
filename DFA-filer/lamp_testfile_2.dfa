@@ -1,5 +1,5 @@
 #! NX/KF 4.0
-DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
+DefClass: A_Table_lamp_test_2 (%ug_create_instance ug_base_part);
 
     #Main origin coordinates
     (Number Parameter) x: 0;
