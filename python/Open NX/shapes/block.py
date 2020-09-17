@@ -1,16 +1,12 @@
-#Basic class in Python
-#NXPython/shapes/Block.py
 import math
 import NXOpen
 import NXOpen.Annotations
 import NXOpen.Features
 import NXOpen.GeometricUtilities
 import NXOpen.Preferences
+
 class Block:
 
-#    length = 0         # class variable shared by all instances
-#	width = ...
-	
 	def getVolume(self):
 		return self.length * self.width * self.height
     
@@ -54,6 +50,3 @@ class Block:
 		
 		blockfeaturebuilder1.Commit()
 		blockfeaturebuilder1.Destroy()
-
-block = Block(0,0,0,100,100,100,"RED","STEEL")
-block.initForNX()
