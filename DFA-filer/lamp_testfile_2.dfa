@@ -7,9 +7,16 @@ DefClass: A_Table_lamp_test_2 (%ug_create_instance ug_base_part);
     (Number Parameter) z: 0;
 
     #Origin points and vectors
+    (Point parameter) base_origin: Point(x: y: z:);
+    (Vector parameter) base_vector: Vector(0,0,1);
+    (Point parameter) leg_origin: base_origin: + base_vector: * base_height:;
+    #DETTE PUNKTET MÅ BYTTES SENERE
     (Point parameter) hood_origin: Point(x:, y:, z:);
-
     (Vector parameter) hood_vector: Vector(0,0,-1);
+
+    #Base parameters
+    (Number parameter) base_height: 10;
+    (Number parameter) base_diameter: 30;
 
     #Hood parameters
     (Number parameter) hood_diameter: 50;
@@ -19,10 +26,20 @@ DefClass: A_Table_lamp_test_2 (%ug_create_instance ug_base_part);
     #Hood cutoff parameters
     (Number parameter) cutoff_part: 1/6; 
     (Number parameter) cutoff_height: getCutoffHeight:(cutoff_part:, hood_diameter:);
-    (Number parameter) distance_from_center_to_cutoff: hood_diameter: / 2 - cutoff_height:; 
+    (Number parameter) distance_from_center_to_cutoff: hood_diameter: / 2 - cutoff_height:;
+
+    #Hood holder parameters
+    (Number parameter) holder_length: cutoff_height:;
+    (Number parameter) holder_diameter: 2;
+    (Number parameter) crossbeam_length: getCutoffDiameter:(hood_diameter:, distance_from_center_to_cutoff:);
+    (Number parameter) crossbeam_diameter: holder_diameter:;
+
+    #Hood conjunction ball
+    (Number parameter) ball_diameter: 4;
+    (Point parameter) lower_ball_origin: hood_origin: + hood_vector: * (cutoff_height:+1);
 
     #Chain parameters
-    (Number parameter) number_of_chains: 4;
+    (Number parameter) number_of_chains: 7;
     (Number parameter) chain_diameter: 0.5;
     (Number parameter) beads_per_chain: 5;
     (Number parameter) bead_diameter: 5;
@@ -116,6 +133,60 @@ DefClass: A_Table_lamp_test_2 (%ug_create_instance ug_base_part);
     origin, hood_center: + Vector(0,0,-1) * distance_from_center_to_cutoff:;
     direction, Vector(0,0,-1);
     operation, Subtract;
+    Target, {hood_sphere:};
+};
+
+(child) hood_conjunction_ball:
+{
+    class, ug_sphere;
+    diameter, ball_diameter:;
+    center, hood_origin:;
+};
+
+(child) hood_upper_conjunction_ball:
+{
+    class, ug_sphere;
+    diameter, ball_diameter:;
+    center, hood_origin:;
+};
+
+(child) hood_lower_conjunction_ball:
+{
+    class, ug_sphere;
+    diameter, ball_diameter:;
+    center, lower_ball_origin:;
+};
+
+(child) hood_holder:
+{
+    class, ug_cylinder;
+    diameter, holder_diameter:;
+    height, holder_length:;
+    Origin, hood_origin:;
+    Direction, hood_vector:;
+    Operation, Unite;
+    Target, {hood_upper_conjunction_ball:, hood_lower_conjunction_ball:};
+};
+
+(child) crossbeam1:
+{
+    class, ug_cylinder;
+    height, crossbeam_length:;
+    diameter, crossbeam_diameter:;
+    origin, lower_ball_origin:;
+    direction, Vector(0,1,0);
+    Operation, Unite;
+    Target, {hood_sphere:};
+};
+
+(child) crossbeam2:
+{
+    class, ug_cylinder;
+    height, crossbeam_length:;
+    diameter, crossbeam_diameter:;
+    origin, lower_ball_origin:;
+    direction, Vector(0,-1,0);
+    Operation, Unite;
     Target, {hood_sphere:};
 };
 

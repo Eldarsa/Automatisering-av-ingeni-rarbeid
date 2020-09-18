@@ -1,0 +1,51 @@
+#! NX/KF 4.0
+DefClass: A_base_and_leg (%ug_create_instance ug_base_part);
+
+    #Main origin coordinates
+    (Number Parameter) x: 0;
+    (Number Parameter) y: 0;
+    (Number Parameter) z: 0;
+
+    #Origin points and vectors
+    (Point parameter) base_origin: Point(x:, y:, z:);
+    (Vector parameter) base_vector: Vector(0,0,1);
+    (Point parameter) leg_origin: base_origin: + base_vector: * base_height:;
+    #DETTE PUNKTET MÅ BYTTES SENERE
+    (Point parameter) hood_origin: Point(x:, y:, z:);
+    (Vector parameter) hood_vector: Vector(0,0,-1);
+
+    #Base parameters
+    (Number parameter) base_height: 10;
+    (Number parameter) base_diameter: 30;
+
+    #Leg parameters
+    (Number parameter) leg_diameter: 5;
+    (Number parameter) upper_leg_radius: 80;
+    (Number parameter) lower_leg_height: 40;
+    (Number parameter) leg_conjunction_diameter: 5;
+    (Point parameter) leg_conjunction_origin: leg_origin: + base_vector: * lower_leg_height:;
+
+(child) base:
+{
+    class, ug_cylinder;
+    diameter, base_diameter:;
+    height, base_height:;
+    origin, base_origin:;
+    direction, base_vector:;
+};
+
+(child) lower_leg:
+{
+    class, ug_cylinder;
+    diameter, leg_diameter:;
+    height, lower_leg_height:;
+    origin, leg_origin:;
+    direction, base_vector:;
+};
+
+(child) leg_conjunction:
+{
+    class, ug_sphere;
+    diameter, leg_conjunction_diameter:;
+    center, leg_origin: + base_vector: * lower_leg_height:;
+};

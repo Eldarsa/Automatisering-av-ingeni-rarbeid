@@ -7,9 +7,26 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     (Number Parameter) z: 0;
 
     #Origin points and vectors
-    (Point parameter) hood_origin: Point(x:, y:, z:);
-
+    (Point parameter) base_origin: Point(x:, y:, z:);
+    (Vector parameter) base_vector: Vector(0,0,1);
+    (Point parameter) leg_origin: base_origin: + base_vector: * base_height:;
+    (Point parameter) upper_leg_center: base_origin: + base_vector: * 
+        (base_height: + lower_leg_height: + upper_leg_radius:);
+    (Point parameter) hood_origin: Point(x:, y:, z: + base_height: + lower_leg_height: 
+        + 2*upper_leg_radius:);
     (Vector parameter) hood_vector: Vector(0,0,-1);
+
+
+    #Base parameters
+    (Number parameter) base_height: 10;
+    (Number parameter) base_diameter: 30;
+
+    #Leg parameters
+    (Number parameter) leg_diameter: 5;
+    (Number parameter) upper_leg_radius: 80;
+    (Number parameter) lower_leg_height: 40;
+    (Number parameter) leg_conjunction_diameter: 5;
+    (Point parameter) leg_conjunction_origin: leg_origin: + base_vector: * lower_leg_height:;
 
     #Hood parameters
     (Number parameter) hood_diameter: 50;
@@ -19,10 +36,20 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     #Hood cutoff parameters
     (Number parameter) cutoff_part: 1/6; 
     (Number parameter) cutoff_height: getCutoffHeight:(cutoff_part:, hood_diameter:);
-    (Number parameter) distance_from_center_to_cutoff: hood_diameter: / 2 - cutoff_height:; 
+    (Number parameter) distance_from_center_to_cutoff: hood_diameter: / 2 - cutoff_height:;
+
+    #Hood holder parameters
+    (Number parameter) holder_length: cutoff_height:;
+    (Number parameter) holder_diameter: 2;
+    (Number parameter) crossbeam_length: getCutoffDiameter:(hood_diameter:, distance_from_center_to_cutoff:);
+    (Number parameter) crossbeam_diameter: holder_diameter:;
+
+    #Hood conjunction ball
+    (Number parameter) ball_diameter: 4;
+    (Point parameter) lower_ball_origin: hood_origin: + hood_vector: * (cutoff_height:+1);
 
     #Chain parameters
-    (Number parameter) number_of_chains: 4;
+    (Number parameter) number_of_chains: 7;
     (Number parameter) chain_diameter: 0.5;
     (Number parameter) beads_per_chain: 5;
     (Number parameter) bead_diameter: 5;
@@ -119,6 +146,60 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     Target, {hood_sphere:};
 };
 
+(child) hood_conjunction_ball:
+{
+    class, ug_sphere;
+    diameter, ball_diameter:;
+    center, hood_origin:;
+};
+
+(child) hood_upper_conjunction_ball:
+{
+    class, ug_sphere;
+    diameter, ball_diameter:;
+    center, hood_origin:;
+};
+
+(child) hood_lower_conjunction_ball:
+{
+    class, ug_sphere;
+    diameter, ball_diameter:;
+    center, lower_ball_origin:;
+};
+
+(child) hood_holder:
+{
+    class, ug_cylinder;
+    diameter, holder_diameter:;
+    height, holder_length:;
+    Origin, hood_origin:;
+    Direction, hood_vector:;
+    Operation, Unite;
+    Target, {hood_upper_conjunction_ball:, hood_lower_conjunction_ball:};
+};
+
+(child) crossbeam1:
+{
+    class, ug_cylinder;
+    height, crossbeam_length:;
+    diameter, crossbeam_diameter:;
+    origin, lower_ball_origin:;
+    direction, Vector(0,1,0);
+    Operation, Unite;
+    Target, {hood_sphere:};
+};
+
+(child) crossbeam2:
+{
+    class, ug_cylinder;
+    height, crossbeam_length:;
+    diameter, crossbeam_diameter:;
+    origin, lower_ball_origin:;
+    direction, Vector(0,-1,0);
+    Operation, Unite;
+    Target, {hood_sphere:};
+};
+
 (list) chains: loop
 {
     for $origin in chain_origin_list:;
@@ -143,3 +224,79 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     };
 };
 (list) DemandValue: {chains:};
+
+#+
+**********LAMP BASE********* 
+#-
+
+(child) base:
+{
+    class, ug_cylinder;
+    diameter, base_diameter:;
+    height, base_height:;
+    origin, base_origin:;
+    direction, base_vector:;
+};
+
+#+
+**********LAMP LEG CHILDREN********
+#-
+
+#Making a profile for the curved leg
+(Child) upper_leg_profile_arc: 
+{
+  class, ug_arc;
+  radius, leg_diameter:/2;
+  start_angle, 0;
+  end_angle, 360;
+  center, leg_conjunction_origin:;
+  X_Axis, Vector(0, 1, 0);
+  Y_Axis, Vector(0, 0, 1);
+
+};
+
+(child) upper_leg_curve: { 
+  class, ug_arc;
+  radius, upper_leg_radius:;
+  start_angle, 0;
+  end_angle, 360;
+  center, upper_leg_center:;
+  X_Axis, Vector(0, 1, 0);
+  Y_Axis, Vector(0, 0, 1);
+};
+
+#Building the curved leg
+(child) upper_leg_profile: {
+  Class, ug_curve_join;
+  profile, {upper_leg_profile_arc:};
+};
+
+(child) upper_leg_path: {
+  Class, ug_curve_join;
+  profile, {upper_leg_curve:};
+};
+
+(child) upper_leg_body: {
+  class, ug_swept;
+  guide, {{reverse, upper_leg_path:}};
+  section, {{reverse, upper_leg_profile:}};
+  scaling, {scale_constant, 1};
+  alignment_init, parameter;
+  tolerances, {0, 0, 0};
+};
+
+(child) lower_leg:
+{
+    class, ug_cylinder;
+    diameter, leg_diameter:;
+    height, lower_leg_height:;
+    origin, leg_origin:;
+    direction, base_vector:;
+};
+
+(child) leg_conjunction:
+{
+    class, ug_sphere;
+    diameter, leg_conjunction_diameter:;
+    center, leg_origin: + base_vector: * lower_leg_height:;
+};

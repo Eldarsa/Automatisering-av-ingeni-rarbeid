@@ -9,10 +9,18 @@ DefClass: Hoop (ug_base_part);
 (number parameter) y: 0;
 (number parameter) z: 0;
 
-(number parameter) number_of_rings: 10;
 
+#Forming a profile for the hoop
+(Child) hoop_profile: {
+  class, ug_arc;
+  radius, hoop_profile_radius:;
+  start_angle, 0;
+  end_angle, 360;
+  center, point(x:+hoop_radius:,y:,z:);
+  Y_Axis, Vector(0,0,1);
+};
 
-#+
+#Elements of the path start to form
 (child) path_curve_1: { 
   class, ug_arc;
   radius, hoop_radius:;
@@ -20,43 +28,20 @@ DefClass: Hoop (ug_base_part);
   end_angle, 360;
   center, point(x:,y:,z:);
 };
-#-
 
-(list) list1: loop
-{
-    for $i from 0 to {number_of_rings:} by 2;
-    collect loop {
-        for $j from 0 to 2;
-        do printValue($j);
-        append {ug_createInstance(
-            class, ug_arc;
-            radius, hoop_profile_radius:;
-            start_angle, 0;
-            end_angle, 360;
-            center, point(x:+hoop_radius:*$i,y:,z:);
-            Y_Axis, Vector(0,1-$j,0+$j);
-            X_Axis, Vector(0,0+$j,0-$j);
-        )};
-    };
-
-};
-(list) DemandValue: {List1:};
 
 
 #Building up the hoop
 
-(child) the_profile: 
-{
+(child) the_profile: {
   Class, ug_curve_join;
-  profile, {List1:};
+  profile, {hoop_profile:};
 };
-(child) the_path: 
-{
+(child) the_path: {
   Class, ug_curve_join;
   profile, {path_curve_1:};
 };
-(child) the_hoop: 
-{
+(child) the_hoop: {
   class, ug_swept;
   guide, {{forward, the_path:}};
   section, {{forward, the_profile:}};
@@ -74,4 +59,3 @@ DefClass: Hoop (ug_base_part);
   Layer, 1;
   color, ug_askClosestColor(GREEN);
 };
-
