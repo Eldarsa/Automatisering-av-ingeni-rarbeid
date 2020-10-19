@@ -1,0 +1,12 @@
+# Override any variables here.
+UGII_PYTHON_HOME=C:\Users\Bruker\anaconda3\envs\openNXtest
+UGII_PYTHON_PATH=C:\Users\Bruker\anaconda3\envs\openNXtest;C:\Users\Bruker\anaconda3\envs\openNXtest\DLLs;C:\Users\Bruker\anaconda3\envs\openNXtest\Lib;C:\Users\Bruker\anaconda3\envs\openNXtest\Lib\site-packages;C:\Program Files\Siemens\NX1899\NXBIN\python
+UGII_PYTHON_LIBRARY_DIR=C:\Users\Bruker\anaconda3\envs\openNXtest
+#
+
+
+UGII_PYTHON_HOME=C:\Users\Bruker\anaconda3\envs\NXopen_env
+UGII_PYTHONPATH=C:\Users\Bruker\anaconda3\envs\NXopen_env;C:\Users\Bruker\anaconda3\envs\NXopen_env\DLLs;C:\Users\Bruker\anaconda3\envs\NXopen_env\Lib;C:\Users\Bruker\anaconda3\envs\NXopen_env\Lib\site-packages;C:\Program Files\Siemens\NX1899\NXBIN\python
+UGII_PYTHON_PATH=C:\Users\Bruker\anaconda3\envs\NXopen_env;C:\Users\Bruker\anaconda3\envs\NXopen_env\DLLs;C:\Users\Bruker\anaconda3\envs\NXopen_env\Lib;C:\Users\Bruker\anaconda3\envs\NXopen_env\Lib\site-packages;C:\Program Files\Siemens\NX1899\NXBIN\python
+UGII_PYTHON_LIBRARY_DIR=C:\Users\Bruker\anaconda3\envs\NXopen_env
+UGII_PYTHON_DLL=python38.dll

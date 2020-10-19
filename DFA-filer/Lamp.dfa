@@ -6,26 +6,28 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     (Number Parameter) y: 0;
     (Number Parameter) z: 0;
 
+    #Choose where to start the leg. Default = [0,0,0]
+    (Vector parameter) leg_displacement: Vector((base_diameter:/2)*0,(base_diameter:/2)*0,0);
+
     #Origin points and vectors
     (Point parameter) base_origin: Point(x:, y:, z:);
     (Vector parameter) base_vector: Vector(0,0,1);
-    (Point parameter) leg_origin: base_origin: + base_vector: * base_height:;
+    (Point parameter) leg_origin: base_origin: + base_vector: * base_height: + leg_displacement:;
     (Point parameter) upper_leg_center: base_origin: + base_vector: * 
-        (base_height: + lower_leg_height: + upper_leg_radius:);
+        (base_height: + lower_leg_height: + upper_leg_radius:) + leg_displacement:;
     (Point parameter) hood_origin: Point(x:, y:, z: + base_height: + lower_leg_height: 
-        + 2*upper_leg_radius:);
+        + 2*upper_leg_radius:) + leg_displacement:;
     (Vector parameter) hood_vector: Vector(0,0,-1);
 
-
     #Base parameters
-    (Number parameter) base_height: 10;
-    (Number parameter) base_diameter: 30;
+    (Number parameter) base_height: 5;
+    (Number parameter) base_diameter: 50;
 
     #Leg parameters
-    (Number parameter) leg_diameter: 5;
-    (Number parameter) upper_leg_radius: 80;
-    (Number parameter) lower_leg_height: 40;
-    (Number parameter) leg_conjunction_diameter: 5;
+    (Number parameter) leg_diameter: 3;
+    (Number parameter) upper_leg_radius: 60;
+    (Number parameter) lower_leg_height: 80;
+    (Number parameter) leg_conjunction_diameter: leg_diameter:;
     (Point parameter) leg_conjunction_origin: leg_origin: + base_vector: * lower_leg_height:;
 
     #Hood parameters
@@ -40,28 +42,37 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
 
     #Hood holder parameters
     (Number parameter) holder_length: cutoff_height:;
-    (Number parameter) holder_diameter: 2;
+    (Number parameter) holder_diameter: leg_diameter:;
     (Number parameter) crossbeam_length: getCutoffDiameter:(hood_diameter:, distance_from_center_to_cutoff:);
     (Number parameter) crossbeam_diameter: holder_diameter:;
 
     #Hood conjunction ball
-    (Number parameter) ball_diameter: 4;
+    (Number parameter) ball_diameter: leg_diameter:;
     (Point parameter) lower_ball_origin: hood_origin: + hood_vector: * (cutoff_height:+1);
 
     #Chain parameters
-    (Number parameter) number_of_chains: 7;
+    (Number parameter) number_of_chains: 6;
     (Number parameter) chain_diameter: 0.5;
-    (Number parameter) beads_per_chain: 5;
+    (Number parameter) beads_per_chain: 6;
     (Number parameter) bead_diameter: 5;
     (Number parameter) space_between_beads: 2; 
     (Number parameter) chain_length: getChainLength:(beads_per_chain:, bead_diameter:, space_between_beads:);
     (Number parameter) angular_distribution: getAngularDistributionSpace:(number_of_chains:);
 
-    #Important helper function!
+    #Important helper function
     (Number parameter) cutoff_radius: getCutoffDiameter:(hood_diameter:, distance_from_center_to_cutoff:);
 
     (List) chain_origin_list: getChainOrigins:(distance_from_center_to_cutoff:, cutoff_radius:, number_of_chains:,
     hood_center:, hood_vector:, angular_distribution:); 
+
+    
+#***********************COLOR PALLETTE************************
+
+    (Name) hood_color: PALE_DULL_GREEN;
+    (Name) bead_color: YELLOW;
+    (Name) leg_color: PALE_DULL_ORANGE;
+    (Name) base_color: PALE_DULL_GREEN;
+    (Name) conjunction_color: PALE_DULL_ORANGE;
 
 #+
 ***************************************METHODS**********************************************
@@ -93,7 +104,7 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
         #This loop simply adds vector to all the points we need. You CAN use Point + Vector = New Point!
          loop 
          {
-             for $i from 0 to $number_of_chains-1;
+             for $i from 0 to $number_of_chains;
              do printValue($angular_distribution*$i);
              append { 
                  $hood_center + $hood_vector * $distance_to_cutoff 
@@ -113,6 +124,9 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     class, ug_sphere;
     diameter, hood_diameter:;
     center, hood_center:;
+    color, ug_askClosestColor(
+        Red
+    );
 };
 
 (child) hood_hole:
@@ -185,8 +199,6 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     diameter, crossbeam_diameter:;
     origin, lower_ball_origin:;
     direction, Vector(0,1,0);
-    Operation, Unite;
-    Target, {hood_sphere:};
 };
 
 (child) crossbeam2:
@@ -196,15 +208,13 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     diameter, crossbeam_diameter:;
     origin, lower_ball_origin:;
     direction, Vector(0,-1,0);
-    Operation, Unite;
-    Target, {hood_sphere:};
 };
 
 (list) chains: loop
 {
     for $origin in chain_origin_list:;
     collect loop{
-        for $bead from 0 to beads_per_chain:;
+        for $bead from 0 to beads_per_chain:-1;
         do printValue($origin);
         do printValue($bead);
         append { ug_createInstance(
@@ -250,7 +260,7 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
   start_angle, 0;
   end_angle, 360;
   center, leg_conjunction_origin:;
-  X_Axis, Vector(0, 1, 0);
+  X_Axis, Vector(1, 0, 0);
   Y_Axis, Vector(0, 0, 1);
 
 };
@@ -258,8 +268,8 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
 (child) upper_leg_curve: { 
   class, ug_arc;
   radius, upper_leg_radius:;
-  start_angle, 0;
-  end_angle, 360;
+  start_angle, 270;
+  end_angle, 450;
   center, upper_leg_center:;
   X_Axis, Vector(0, 1, 0);
   Y_Axis, Vector(0, 0, 1);
@@ -282,6 +292,7 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
   section, {{reverse, upper_leg_profile:}};
   scaling, {scale_constant, 1};
   alignment_init, parameter;
+  orientation, {orientation_fixed};
   tolerances, {0, 0, 0};
 };
 
@@ -292,6 +303,9 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     height, lower_leg_height:;
     origin, leg_origin:;
     direction, base_vector:;
+    color, ug_askClosestColor(
+        RED
+    );
 };
 
 (child) leg_conjunction:
@@ -299,4 +313,88 @@ DefClass: A_Table_lamp (%ug_create_instance ug_base_part);
     class, ug_sphere;
     diameter, leg_conjunction_diameter:;
     center, leg_origin: + base_vector: * lower_leg_height:;
+};
+
+#+
+******************************COLOR IMPLEMENTATIONS**********************************
+#- 
+
+(child) color_leg_conjunction:
+{
+    class, ug_body;
+    feature, {leg_conjunction:};
+    Layer, 1;
+    color, ug_askClosestColor(conjunction_color:);
+};
+
+(child) color_lower_leg:
+{
+    class, ug_body;
+    feature, {lower_leg:};
+    Layer, 1;
+    color, ug_askClosestColor(leg_color:);
+};
+
+(child) color_upper_leg_body:
+{
+    class, ug_body;
+    feature, {upper_leg_body:};
+    Layer, 1;
+    color, ug_askClosestColor(leg_color:);
+};
+
+(child) color_base:
+{
+    class, ug_body;
+    feature, {base:};
+    Layer, 1;
+    color, ug_askClosestColor(base_color:);
+};
+
+(child) color_hood:
+{
+    class, ug_body;
+    feature, {hood_sphere:};
+    Layer, 1;
+    color, ug_askClosestColor(hood_color:);
+};
+
+(child) color_holder:
+{
+    class, ug_body;
+    feature, {hood_holder:};
+    Layer, 1;
+    color, ug_askClosestColor(leg_color:);
+};
+
+(child) color_top_ball:
+{
+    class, ug_body;
+    feature, {hood_conjunction_ball:};
+    Layer, 1;
+    color, ug_askClosestColor(conjunction_color:);
+};
+
+(child) color_lower_ball:
+{
+    class, ug_body;
+    feature, {hood_lower_conjunction_ball:};
+    Layer, 1;
+    color, ug_askClosestColor(conjunction_color:);
+};
+
+(child) color_crossbeam1:
+{
+    class, ug_body;
+    feature, {crossbeam1:};
+    Layer, 1;
+    color, ug_askClosestColor(conjunction_color:);
+};
+
+(child) color_crossbeam2:
+{
+    class, ug_body;
+    feature, {crossbeam2:};
+    Layer, 1;
+    color, ug_askClosestColor(conjunction_color:);
 };

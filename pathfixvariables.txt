@@ -1,0 +1,32 @@
+C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32
+
+"C:\Program Files\Siemens\NX1899\nxbin\python\Python37.zip";"C:\Program Files\Siemens\NX1899\nxbin\python";"C:\Program Files\Siemens\NX1899\design_tools\checkmate\python";
+
+UGII_PYTHON_HOME="C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32"
+UGII_PYTHON_DLL=python38.dll
+UGII_PYTHON_LIBRARY_DIR = "C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32"
+UGII_PYTHONPATH = "C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32";"C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32\DLLs";"C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32\Lib";"C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32\Lib\site-packages";"C:\Program Files\Siemens\NX1899\nxbin\python";"C:\Program Files\Siemens\NX1899\design_tools\checkmate\python"
+
+TCL_LIBRARY="C:\Users\Bruker\AppData\Local\Programs\Python\Python38-32\tcl\tcl8.6"
+
+
+UGII_PYTHON_HOME="C:\Program Files\Python38"
+UGII_PYTHON_DLL=python38.dll
+UGII_PYTHON_LIBRARY_DIR = "C:\Program Files\Python38"
+UGII_PYTHONPATH = "C:\Program Files\Python38";"C:\Program Files\Python38\DLLs";"C:\Program Files\Python38\Lib";"C:\Program Files\Python38\Lib\site-packages";"C:\Program Files\Siemens\NX1899\design_tools\checkmate\python"
+
+TCL_LIBRARY="C:\Program Files\Python38\tcl\tcl8.6"
+
+
+Revert version:
+UGII_PYTHONPATH = "C:\Program Files\Siemens\NX1899\nxbin\python\Python37.zip";"C:\Program Files\Siemens\NX1899\nxbin\python";"C:\Program Files\Siemens\NX1899\design_tools\checkmate\python";"C:\Program Files\Python38";"C:\Program Files\Python38\DLLs";"C:\Program Files\Python38\Lib";"C:\Program Files\Python38\Lib\site-packages"
+
+Path bruteforce:
+UGII_PYTHONPATH = "C:\Program Files\Siemens\NX1899\nxbin\python\Python37.zip";"C:\Program Files\Siemens\NX1899\nxbin\python";"C:\Program Files\Siemens\NX1899\design_tools\checkmate\python";"C:\Program Files\Python38";"C:\Program Files\Python38\DLLs";"C:\Program Files\Python38\Lib";"C:\Program Files\Python38\Lib\site-packages";"C:\Users\Bruker\AppData\Roaming\Python\Python38\site-packages";"C:\Users\Bruker\AppData\Roaming\Python\Python38\site-packages\numpy\core"
+
+
+Path with some options:
+UGII_PYTHONPATH = "C:\Program Files\Siemens\NX1899\nxbin\python\Python37.zip";"C:\Program Files\Siemens\NX1899\nxbin\python";"C:\Program Files\Siemens\NX1899\design_tools\checkmate\python";"C:\Program Files\Python38";"C:\Program Files\Python38\DLLs";"C:\Program Files\Python38\Lib";"C:\Program Files\Python38\Lib\site-packages";"C:\Users\Bruker\AppData\Roaming\Python\Python38\site-packages";"C:\Users\Bruker\AppData\Roaming\Python\Python38\site-packages\numpy\";"C:\Users\Bruker\AppData\Roaming\Python\Python38\Scripts"
+
+
+UGII_PYTHONPATH = "C:\Program Files\Siemens\NX1899\nxbin\python\Python37.zip";"C:\Program Files\Siemens\NX1899\nxbin\python";"C:\Program Files\Siemens\NX1899\design_tools\checkmate\python";"C:\Program Files\Python38";"C:\Program Files\Python38\DLLs";"C:\Program Files\Python38\Lib";"C:\Program Files\Python38\Lib\site-packages";"C:\Users\Bruker\AppData\Roaming\Python\Python38\site-packages";"C:\Users\Bruker\AppData\Roaming\Python\Python38\Scripts"
